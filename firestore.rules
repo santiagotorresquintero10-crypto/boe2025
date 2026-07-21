@@ -1,0 +1,47 @@
+rules_version = '2';
+
+// ══════════════════════════════════════════════════════════
+// BOE 2.0 — Reglas de seguridad de Cloud Firestore
+// Pegar en: Consola Firebase → Firestore Database → Reglas → Publicar
+// ══════════════════════════════════════════════════════════
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Perfil: cada usuario solo accede a su propio documento
+    match /users/{userId} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == userId;
+    }
+
+    // Carpetas: solo el dueño puede crearlas, verlas y modificarlas
+    match /carpetas/{carpetaId} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if request.auth != null
+                    && resource.data.uid == request.auth.uid;
+    }
+
+    // Plantillas: biblioteca personal de estructuras reutilizables
+    match /plantillas/{plantillaId} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if request.auth != null
+                    && resource.data.uid == request.auth.uid;
+    }
+
+    // Sesiones: solo el dueño puede crearlas, verlas y modificarlas
+    match /sesiones/{sesionId} {
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid;
+      allow read, update, delete: if request.auth != null
+                    && resource.data.uid == request.auth.uid;
+
+      // Historial de versiones: hereda la propiedad de la sesión padre
+      match /versiones/{versionId} {
+        allow read, create, delete: if request.auth != null
+          && get(/databases/$(database)/documents/sesiones/$(sesionId)).data.uid == request.auth.uid;
+      }
+    }
+  }
+}

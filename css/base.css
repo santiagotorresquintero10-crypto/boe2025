@@ -1,0 +1,397 @@
+/* ══════════════════════════════════════════════════════════
+   BOE 2.0 — Sistema de diseño base
+   Tokens, reset, componentes compartidos (botones, campos,
+   badges, modales, toasts, skeletons) y control de pantallas.
+   ══════════════════════════════════════════════════════════ */
+
+:root {
+  /* Paleta institucional */
+  --ink: #123a52;
+  --ink-deep: #0c2a3d;
+  --ink-darker: #081f2e;
+  --ink-soft: #466880;
+  --paper: #f5f7fa;
+  --surface: #ffffff;
+  --line: #e3eaf0;
+  --line-strong: #cfdbe4;
+  --amber: #e8a23d;
+  --amber-deep: #c9862a;
+  --amber-soft: #fdf3e3;
+  --success: #1f8a66;
+  --success-bg: #e7f5ef;
+  --danger: #c2492e;
+  --danger-bg: #fbeeea;
+  --info-bg: #eaf3fa;
+
+  /* Tipografía */
+  --font-display: "Archivo", sans-serif;
+  --font-body: "Inter", sans-serif;
+
+  /* Métricas */
+  --radius-sm: 8px;
+  --radius: 11px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 3px rgba(12, 42, 61, 0.07);
+  --shadow: 0 6px 24px rgba(12, 42, 61, 0.09);
+  --shadow-lg: 0 18px 50px rgba(12, 42, 61, 0.18);
+  --t-fast: 140ms ease;
+  --t-med: 240ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--ink-deep);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 { font-family: var(--font-display); color: var(--ink); line-height: 1.2; }
+
+button { font-family: inherit; cursor: pointer; }
+input, select, textarea { font-family: inherit; font-size: inherit; }
+
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ══════════ Control de pantallas (SPA) ══════════
+   Solo la pantalla con .visible existe para el usuario.
+   Las demás quedan display:none — nunca hay apilamiento. */
+
+.screen { display: none; }
+
+.screen.visible {
+  display: block;
+  animation: screenIn 320ms var(--t-med);
+}
+
+@keyframes screenIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ══════════ Logo de marca ══════════ */
+
+.brand-logo {
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: linear-gradient(135deg, #f0b356, var(--amber-deep));
+  color: var(--ink-darker);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 13.5px;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+/* ══════════ Botones ══════════ */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10.5px 18px;
+  border: 1.5px solid transparent;
+  border-radius: var(--radius);
+  font-weight: 600;
+  font-size: 14.5px;
+  white-space: nowrap;
+  transition: background var(--t-fast), border-color var(--t-fast),
+              color var(--t-fast), transform var(--t-fast), box-shadow var(--t-fast);
+}
+
+.btn:active { transform: scale(0.98); }
+.btn:disabled { opacity: 0.55; cursor: not-allowed; transform: none; }
+
+.btn-primary { background: var(--ink); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover:not(:disabled) { background: var(--ink-deep); box-shadow: var(--shadow); }
+
+.btn-secondary { background: var(--surface); color: var(--ink); border-color: var(--line-strong); }
+.btn-secondary:hover:not(:disabled) { border-color: var(--ink-soft); background: var(--paper); }
+
+.btn-danger { background: var(--danger); color: #fff; }
+.btn-danger:hover:not(:disabled) { background: #a83c25; }
+
+.btn-ghost-danger { background: transparent; color: var(--danger); }
+.btn-ghost-danger:hover:not(:disabled) { background: var(--danger-bg); }
+
+.btn-block { width: 100%; }
+.btn-sm { padding: 7px 13px; font-size: 13.5px; border-radius: var(--radius-sm); }
+
+.btn-icon {
+  border: none;
+  background: transparent;
+  color: inherit;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  transition: background var(--t-fast), color var(--t-fast);
+}
+
+/* ══════════ Campos de formulario ══════════ */
+
+.field { margin-bottom: 16px; }
+
+.field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.field input, .field textarea, .field select {
+  width: 100%;
+  padding: 11px 13px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink-deep);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+
+.field input:hover, .field textarea:hover { border-color: var(--line-strong); }
+
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3.5px rgba(18, 58, 82, 0.10);
+}
+
+.field textarea { resize: vertical; min-height: 76px; }
+
+.field-hint { font-size: 12.5px; color: var(--ink-soft); margin-top: 5px; }
+
+/* Contraseña con botón de ojo */
+.pass-wrap { position: relative; }
+.pass-wrap input { padding-right: 44px; }
+
+.toggle-pass {
+  position: absolute;
+  top: 50%; right: 8px;
+  transform: translateY(-50%);
+  border: none; background: transparent;
+  padding: 6px;
+  color: var(--ink-soft);
+  display: grid; place-items: center;
+  border-radius: 6px;
+}
+.toggle-pass:hover { color: var(--ink); background: var(--paper); }
+
+/* ══════════ Alertas dentro de formularios ══════════ */
+
+.form-alert {
+  display: none;
+  padding: 11px 13px;
+  border-radius: var(--radius);
+  font-size: 13.5px;
+  margin-bottom: 16px;
+  border: 1px solid transparent;
+}
+.form-alert.error   { display: block; background: var(--danger-bg);  color: var(--danger);  border-color: #f0d4cc; }
+.form-alert.success { display: block; background: var(--success-bg); color: var(--success); border-color: #cfe8dd; }
+
+/* ══════════ Badges de estado ══════════ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.badge-proceso   { background: var(--amber-soft); color: var(--amber-deep); }
+.badge-finalizada{ background: var(--success-bg); color: var(--success); }
+
+/* ══════════ Modales ══════════ */
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 31, 46, 0.55);
+  backdrop-filter: blur(3px);
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  z-index: 60;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.modal-backdrop.visible { opacity: 1; }
+
+.modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 440px;
+  padding: 26px;
+  transform: translateY(14px) scale(0.98);
+  transition: transform 240ms var(--t-med);
+  max-height: 90vh;
+  overflow: auto;
+}
+.modal-backdrop.visible .modal { transform: none; }
+
+.modal-lg { max-width: 760px; }
+
+.modal h3 { font-size: 18px; margin-bottom: 8px; }
+.modal p.modal-text { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+/* Vista previa de documentos */
+.preview-frame {
+  width: 100%;
+  height: min(70vh, 560px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+}
+img.preview-frame { object-fit: contain; }
+
+/* ══════════ Notificaciones (toasts) ══════════ */
+
+#toast-zone {
+  position: fixed;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: var(--ink-darker);
+  color: #fff;
+  padding: 11px 18px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 220ms ease, transform 220ms var(--t-med);
+  max-width: min(92vw, 440px);
+}
+.toast.visible { opacity: 1; transform: none; }
+.toast-success { background: var(--success); }
+.toast-error   { background: var(--danger); }
+
+/* ══════════ Skeletons (carga elegante) ══════════ */
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: #e9eef3;
+  border-radius: var(--radius);
+}
+.skeleton::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.65), transparent);
+  animation: shimmer 1.3s infinite;
+}
+@keyframes shimmer {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+.sk-line { height: 14px; margin-bottom: 10px; }
+.sk-card { height: 96px; }
+
+/* ══════════ Spinner ══════════ */
+
+.spinner {
+  width: 16px; height: 16px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  flex-shrink: 0;
+}
+.spinner-dark { border-color: rgba(18,58,82,0.2); border-top-color: var(--ink); }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ══════════════════════════════════════════════════════════
+   MODO OSCURO
+   Se activa con html[data-theme="dark"]. La mayoría de los
+   componentes se re-tematizan solos vía tokens.
+   ══════════════════════════════════════════════════════════ */
+
+html[data-theme="dark"] {
+  --ink: #e9f2f8;          /* títulos y etiquetas */
+  --ink-deep: #d3e2ec;     /* texto principal */
+  --ink-soft: #8ea9bc;     /* texto secundario */
+  --paper: #0b1620;        /* fondo general */
+  --surface: #122333;      /* tarjetas */
+  --line: #1f3648;
+  --line-strong: #2d4b63;
+  --amber-soft: rgba(232, 162, 61, 0.14);
+  --success-bg: rgba(31, 138, 102, 0.16);
+  --danger-bg: rgba(194, 73, 46, 0.18);
+  --info-bg: rgba(90, 140, 180, 0.16);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow: 0 8px 26px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 20px 55px rgba(0, 0, 0, 0.6);
+}
+
+/* Ajustes puntuales que los tokens no cubren */
+html[data-theme="dark"] .btn-primary {
+  background: var(--amber);
+  color: #081f2e;
+}
+html[data-theme="dark"] .btn-primary:hover:not(:disabled) { background: #f0b356; }
+
+html[data-theme="dark"] .btn-secondary { color: var(--ink); }
+
+html[data-theme="dark"] .form-alert.error   { border-color: rgba(194,73,46,0.45); color: #f0a894; }
+html[data-theme="dark"] .form-alert.success { border-color: rgba(31,138,102,0.45); color: #7fd4b4; }
+
+html[data-theme="dark"] .badge-proceso    { color: #f2c079; }
+html[data-theme="dark"] .badge-finalizada { color: #7fd4b4; }
+
+html[data-theme="dark"] .skeleton { background: #1a3040; }
+html[data-theme="dark"] .skeleton::after {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+}
+
+html[data-theme="dark"] .spinner-dark {
+  border-color: rgba(233,242,248,0.2);
+  border-top-color: var(--ink);
+}
+
+html[data-theme="dark"] :focus-visible { outline-color: var(--amber); }
